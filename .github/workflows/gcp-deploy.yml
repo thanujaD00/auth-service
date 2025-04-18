@@ -5,8 +5,8 @@ on:
     branches: [ main ]
 
 env:
-  PROJECT_ID: your-gcp-project-id  # Replace with your GCP Project ID
-  SERVICE_NAME: my-app  # The name you want to give your Cloud Run service
+  PROJECT_ID: auth-service-457220  # Replace with your GCP Project ID
+  SERVICE_NAME: auth-service  # The name you want to give your Cloud Run service
   REGION: us-central1  # The region where you want to deploy
 
 jobs:
@@ -39,3 +39,6 @@ jobs:
           --platform managed \
           --region ${{ env.REGION }} \
           --allow-unauthenticated
+
+
+          
