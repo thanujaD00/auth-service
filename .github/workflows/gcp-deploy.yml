@@ -5,9 +5,9 @@ on:
     branches: [ main ]
 
 env:
-  PROJECT_ID: auth-service-457220  # Replace with your GCP Project ID
-  SERVICE_NAME: auth-service  # The name you want to give your Cloud Run service
-  REGION: us-central1  # The region where you want to deploy
+    PROJECT_ID: auth-service-457220  # Replace with your GCP Project ID
+    SERVICE_NAME: auth-service  # The name you want to give your Cloud Run service
+    REGION: us-central1  # The region where you want to deploy
 
 jobs:
   build-and-deploy:
@@ -17,12 +17,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
+    - name: Google Auth
+      id: auth
+      uses: google-github-actions/auth@v1
       with:
-        project_id: ${{ env.PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        export_default_credentials: true
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
 
     - name: Authorize Docker push
       run: gcloud auth configure-docker
