@@ -1,0 +1,4 @@
+2025-04-16T15:01:52.507Z :- ERROR  : MongoDB connection error 😢: connect ECONNREFUSED ::1:27017
+2025-04-16T15:02:58.014Z :- ERROR  : MongoDB connection error 😢: connect ECONNREFUSED ::1:27017
+2025-04-16T15:04:07.771Z :- ERROR  : SignUp Error: User Already Exists
+2025-04-16T15:05:02.448Z :- ERROR  : SignUp Error: User Already Exists

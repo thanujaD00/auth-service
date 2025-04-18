@@ -1,0 +1,26 @@
+2025-04-16T15:01:52.476Z :- INFO   : MongoDB disconnected 😢
+2025-04-16T15:02:57.979Z :- INFO   : MongoDB disconnected 😢
+2025-04-16T15:03:45.214Z :- INFO   : MongoDB connected successfully 😍
+2025-04-16T15:03:45.240Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-16T15:04:07.771Z :- ERROR  : SignUp Error: User Already Exists
+2025-04-16T15:05:02.448Z :- ERROR  : SignUp Error: User Already Exists
+2025-04-16T20:28:27.052Z :- INFO   : MongoDB disconnected 😢
+2025-04-17T04:51:40.954Z :- INFO   : SIGINT signal received: closing HTTP server
+2025-04-17T04:52:09.905Z :- INFO   : MongoDB connected successfully 😍
+2025-04-17T04:52:09.926Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-17T05:12:40.413Z :- INFO   : SIGINT signal received: closing HTTP server
+2025-04-17T05:13:02.734Z :- INFO   : MongoDB connected successfully 😍
+2025-04-17T05:13:02.752Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-17T05:16:48.977Z :- INFO   : SIGINT signal received: closing HTTP server
+2025-04-17T15:03:49.879Z :- INFO   : MongoDB connected successfully 😍
+2025-04-17T15:03:49.904Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-17T15:34:29.987Z :- INFO   : MongoDB connected successfully 😍
+2025-04-17T15:34:29.999Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-17T15:58:18.688Z :- INFO   : SIGINT signal received: closing HTTP server
+2025-04-17T15:58:34.612Z :- INFO   : MongoDB connected successfully 😍
+2025-04-17T15:58:34.622Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-17T21:24:45.542Z :- INFO   : MongoDB disconnected 😢
+2025-04-18T04:00:56.315Z :- INFO   : SIGINT signal received: closing HTTP server
+2025-04-18T04:02:48.234Z :- INFO   : MongoDB connected successfully 😍
+2025-04-18T04:02:48.248Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-18T10:43:31.553Z :- INFO   : MongoDB disconnected 😢
