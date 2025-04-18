@@ -17,10 +17,10 @@ spec:
           image: naturayur/auth-service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8001
+            - containerPort: 8081
           env:
             - name: PORT
-              value: "8001"
+              value: "8081"
             - name: NODE_ENV
               value: "production"
             - name: MONGODB_URI
@@ -60,13 +60,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8001
+              port: 8081
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health
-              port: 8001
+              port: 8081
             initialDelaySeconds: 5
             periodSeconds: 5
 
@@ -80,6 +80,6 @@ spec:
     app: auth
   ports:
     - protocol: TCP
-      port: 8001
-      targetPort: 8001
+      port: 8081
+      targetPort: 8081
   type: ClusterIP
