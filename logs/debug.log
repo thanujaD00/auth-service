@@ -24,3 +24,6 @@
 2025-04-18T04:02:48.234Z :- INFO   : MongoDB connected successfully 😍
 2025-04-18T04:02:48.248Z :- INFO   : Auth Service is running on port 8001🚀
 2025-04-18T10:43:31.553Z :- INFO   : MongoDB disconnected 😢
+2025-04-18T20:37:34.516Z :- INFO   : MongoDB connected successfully 😍
+2025-04-18T20:37:34.522Z :- INFO   : Auth Service is running on port 8001🚀
+2025-04-18T20:38:52.730Z :- INFO   : SIGINT signal received: closing HTTP server
