@@ -13,7 +13,7 @@ import errorHandlerMiddleware from "./middleware/errorhandler.middleware";
 import "./utils/passport-config";
 
 const app: Express = express();
-const PORT: number = parseInt(process.env.PORT || "8081", 10);
+const PORT = process.env.PORT || 8081;
 
 // Middleware
 app.use(express.json());
