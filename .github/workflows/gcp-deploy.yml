@@ -18,11 +18,15 @@ jobs:
         with:
           fetch-depth: 0  # Important for SonarCloud to analyze all history
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        with:
+          args: >
+            -Dsonar.projectKey=66c92708eddca368df1b2a2cbaa8cbe25b9759fd
+            -Dsonar.organization=thanujad00
+            -Dsonar.branch.name=${{ github.ref_name }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Auto-generated token by GitHub
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # You'll need to add this to your repo secrets
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build-and-deploy:
     needs: sonarcloud-scan # Ensures scan completes successfully before deployment
