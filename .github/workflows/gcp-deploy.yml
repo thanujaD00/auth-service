@@ -1,4 +1,4 @@
-name: Build and Deploy to Cloud Run
+name: Build, Scan and Deploy to Cloud Run
 
 on:
   push:
@@ -10,7 +10,22 @@ env:
   REGION: us-central1 # The region where you want to deploy
 
 jobs:
+  sonarcloud-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Important for SonarCloud to analyze all history
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Auto-generated token by GitHub
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # You'll need to add this to your repo secrets
+
   build-and-deploy:
+    needs: sonarcloud-scan # Ensures scan completes successfully before deployment
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +52,7 @@ jobs:
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image gcr.io/${{ secrets.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+            --image gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
             --platform managed \
             --port 8081 \
             --region ${{ env.REGION }} \
