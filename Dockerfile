@@ -10,6 +10,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install --only=production
 COPY --from=builder /usr/src/app/dist ./dist
-# Add this back - it doesn't affect functionality but documents the port
+
 EXPOSE 8081
+
 CMD ["node", "dist/app.js"]
