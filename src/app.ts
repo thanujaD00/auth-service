@@ -13,7 +13,7 @@ import errorHandlerMiddleware from "./middleware/errorhandler.middleware";
 import "./utils/passport-config";
 
 const app: Express = express();
-const PORT = 8081;
+const PORT = process.env.PORT;
 
 // Middleware
 app.use(express.json());
@@ -41,8 +41,11 @@ app.use(errorHandlerMiddleware);
 
 // Start server
 async function startServer() {
+  console.log("Environment variables PORT:", process.env.PORT);
+  console.log("Starting application...");
   try {
     await connectDB();
+
     const server = app.listen(PORT, () => {
       logger.info(`Auth Service is running on port ${PORT}🚀`);
     });
