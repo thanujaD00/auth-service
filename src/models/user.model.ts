@@ -109,7 +109,12 @@ UserSchema.methods.generateJWTToken = function (): string {
     isVerified: this.isVerified,
   };
 
-  const secret = process.env.JWT_SECRET || "jwt_secret";
+  // Ensure the secret is retrieved securely
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not defined in environment variables");
+  }
+
   const expiresIn = process.env.JWT_EXPIRES_IN || "7d";
 
   return jwt.sign(payload, secret, { expiresIn } as SignOptions);
@@ -119,7 +124,12 @@ UserSchema.methods.generateJWTToken = function (): string {
 UserSchema.methods.generateRefreshToken = function (): string {
   const payload = { id: this._id };
 
-  const secret = process.env.JWT_REFRESH_SECRET || "jwt_refresh_secret";
+  // Ensure the refresh secret is retrieved securely
+  const secret = process.env.JWT_REFRESH_SECRET;
+  if (!secret) {
+    throw new Error("JWT_REFRESH_SECRET is not defined in environment variables");
+  }
+
   const expiresIn = process.env.JWT_REFRESH_EXPIRES_IN || "30d";
 
   return jwt.sign(payload, secret, { expiresIn } as SignOptions);
