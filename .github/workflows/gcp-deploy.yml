@@ -12,7 +12,7 @@ env:
   REGION: us-central1
 
 jobs:
-  build-and-scan:
+  build-and-Snyk-Security-Scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -60,7 +60,7 @@ jobs:
           args: --file=Dockerfile --severity-threshold=high
 
   deploy:
-    needs: build-and-scan
+    needs: build-and-Snyk-Security-Scan
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
