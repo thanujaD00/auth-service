@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import jwt from "jsonwebtoken";
+import * as dotenv from "dotenv";
+dotenv.config();
 import * as authService from "../services/auth.service";
 import { BadRequestError } from "../errors";
 import {
@@ -10,6 +12,8 @@ import {
 import { sendEmail } from "../utils/send-mail";
 import logger from "../config/logger.config";
 import { TokenPayload } from "../types/auth.types";
+
+const secretKey = process.env.JWT_SECRET_KEY || 'fallback-secret-key'; // Use environment variable
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
@@ -73,7 +77,7 @@ export const userSignIn = (req: Request, res: Response, next: NextFunction) => {
         accessToken: userData.id, // The JWT is currently in the id field
         refreshToken: jwt.sign(
           { id: userData._id || userData.id.split(".")[1] },
-          process.env.JWT_REFRESH_SECRET || "jwt_refresh_secret",
+          process.env.JWT_REFRESH_SECRET || "fallback-refresh-secret", // Use environment variable
           { expiresIn: "30d" }
         ),
         role: userData.role,
@@ -128,7 +132,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET || "jwt_secret",
+      secretKey,
       { expiresIn: "5m" }
     );
 
@@ -162,7 +166,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     // Verify the token and get the user ID
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "jwt_secret"
+      process.env.JWT_SECRET_KEY || 'fallback-secret-key' // Use environment variable
     ) as TokenPayload;
 
     await authService.resetPassword(decoded.id, password);

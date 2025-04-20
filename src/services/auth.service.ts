@@ -10,9 +10,12 @@ async function signUp(userData: SignUpInput): Promise<string> {
       ...userData,
       isVerified: true,
     });
-    return jwt.sign({ id: user.id }, process.env.JWT_SECRET || "jwt_secret", {
-      expiresIn: "10m",
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET_KEY || 'fallback-secret-key', // Use environment variable
+      { expiresIn: '1h' }
+    );
+    return token;
   } catch (error: any) {
     if (error.code === 11000) {
       throw new BadRequestError("User Already Exists");
@@ -33,7 +36,7 @@ async function verifyUser(token: string) {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "jwt_secret"
+      process.env.JWT_SECRET || "jwt_secret" // Use environment variable
     ) as TokenPayload;
 
     const user = await User.findById(decoded.id);
@@ -82,7 +85,7 @@ async function refreshToken(refreshToken: string) {
 
     const decoded = jwt.verify(
       refreshToken,
-      process.env.JWT_REFRESH_SECRET || "jwt_refresh_secret"
+      process.env.JWT_REFRESH_SECRET || "jwt_refresh_secret" // Use environment variable
     ) as TokenPayload;
 
     const user = await User.findById(decoded.id);

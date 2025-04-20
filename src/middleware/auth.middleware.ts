@@ -20,7 +20,7 @@ export function validateUserRoleAndToken(requiredRoles: ROLES[] = []) {
       // Extract the user data from the token
       const decoded = jwt.verify(
         token,
-        process.env.JWT_SECRET || "jwt_secret"
+        process.env.JWT_SECRET_KEY || "fallback-secret-key" // Use environment variable
       ) as TokenPayload;
 
       // Find the user in the database

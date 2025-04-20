@@ -11,12 +11,13 @@ export const generateAccessToken = (user: IUser): string => {
     isVerified: user.isVerified,
   };
 
-  const secret = process.env.JWT_SECRET || "jwt_secret";
-  const options: SignOptions = {
-    expiresIn: (process.env.JWT_EXPIRES_IN || "7d") as SignOptions["expiresIn"],
-  };
+  const accessToken = jwt.sign(
+    payload,
+    process.env.JWT_SECRET_KEY || "fallback-secret-key",
+    { expiresIn: "1h" }
+  );
 
-  return jwt.sign(payload, secret, options);
+  return accessToken;
 };
 
 export const generateRefreshToken = (user: IUser): string => {
@@ -24,7 +25,7 @@ export const generateRefreshToken = (user: IUser): string => {
     id: user._id,
   };
 
-  const secret = process.env.JWT_REFRESH_SECRET || "jwt_refresh_secret";
+  const secret = process.env.JWT_REFRESH_SECRET || "fallback-refresh-secret";
   const options: SignOptions = {
     expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN ||
       "30d") as SignOptions["expiresIn"],
