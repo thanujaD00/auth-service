@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import passport from "passport";
-import jwt from "jsonwebtoken";
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
 import * as dotenv from "dotenv";
 dotenv.config();
 import * as authService from "../services/auth.service";
@@ -12,9 +12,9 @@ import {
 import { sendEmail } from "../utils/send-mail";
 import logger from "../config/logger.config";
 import { TokenPayload } from "../types/auth.types";
+import { getSecretKey, getRefreshSecretKey } from "../utils/secret-manager";
 
-const secretKey = process.env.JWT_SECRET_KEY || 'fallback-secret-key'; // Use environment variable
-
+// Use environment variables and remove hardcoded fallbacks
 export const userSignUp = async (req: Request, res: Response) => {
   try {
     const { email, password, firstName, lastName, contactNo } = req.body;
@@ -59,7 +59,7 @@ export const userSignIn = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
     "local",
     { session: false },
-    (err: any, userData: any) => {
+    async (err: any, userData: any) => {
       if (err) {
         return res.status(400).json({
           message: err.message,
@@ -72,36 +72,46 @@ export const userSignIn = (req: Request, res: Response, next: NextFunction) => {
         });
       }
 
-      // Create the token structure correctly
-      const tokenData = {
-        accessToken: userData.id, // The JWT is currently in the id field
-        refreshToken: jwt.sign(
-          { id: userData._id || userData.id.split(".")[1] },
-          process.env.JWT_REFRESH_SECRET || "fallback-refresh-secret", // Use environment variable
-          { expiresIn: "30d" }
-        ),
-        role: userData.role,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        // Include other fields as needed
-      };
+      try {
+        // Use the secure refresh secret from environment
+        const refreshSecret = await getRefreshSecretKey();
+        
+        // Create the token structure correctly
+        const tokenData = {
+          accessToken: userData.id, // The JWT is currently in the id field
+          refreshToken: jwt.sign(
+            { id: userData._id || userData.id.split(".")[1] },
+            refreshSecret as Secret,
+            { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "30d" } as SignOptions
+          ),
+          role: userData.role,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          // Include other fields as needed
+        };
 
-      // Set refresh token in HTTP-only cookie
-      res.cookie("refreshToken", tokenData.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      });
+        // Set refresh token in HTTP-only cookie
+        res.cookie("refreshToken", tokenData.refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
 
-      // Return access token and user info in response
-      return res.status(200).json({
-        accessToken: tokenData.accessToken,
-        role: tokenData.role,
-        firstName: tokenData.firstName,
-        lastName: tokenData.lastName,
-        message: "User Logged In Successfully",
-      });
+        // Return access token and user info in response
+        return res.status(200).json({
+          accessToken: tokenData.accessToken,
+          role: tokenData.role,
+          firstName: tokenData.firstName,
+          lastName: tokenData.lastName,
+          message: "User Logged In Successfully",
+        });
+      } catch (error: any) {
+        logger.error(`JWT Generation Error: ${error.message}`);
+        return res.status(500).json({
+          message: "Authentication error",
+        });
+      }
     }
   )(req, res, next);
 };
@@ -129,7 +139,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
     const user = await authService.findUserByEmail(email);
-
+    
+    // Get secure secret key
+    const secretKey = await getSecretKey();
+    
     const token = jwt.sign(
       { id: user._id },
       secretKey,
@@ -163,11 +176,11 @@ export const resetPassword = async (req: Request, res: Response) => {
     const { token } = req.params;
     const { password } = req.body;
 
+    // Get secure secret key
+    const secretKey = await getSecretKey();
+    
     // Verify the token and get the user ID
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY || 'fallback-secret-key' // Use environment variable
-    ) as TokenPayload;
+    const decoded = jwt.verify(token, secretKey) as TokenPayload;
 
     await authService.resetPassword(decoded.id, password);
 

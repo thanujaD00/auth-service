@@ -1,8 +1,9 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import User from "../models/user.model";
 import { BadRequestError, UnAuthorized } from "../errors";
 import { generateAccessToken } from "../utils/generate-jwt-keys";
 import { SignUpInput, SignInInput, TokenPayload } from "../types/auth.types";
+import { getSecretKey, getRefreshSecretKey } from "../utils/secret-manager";
 
 async function signUp(userData: SignUpInput): Promise<string> {
   try {
@@ -10,10 +11,14 @@ async function signUp(userData: SignUpInput): Promise<string> {
       ...userData,
       isVerified: true,
     });
+    
+    // Get secure secret key
+    const secretKey = await getSecretKey();
+    
     const token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET_KEY || 'fallback-secret-key', // Use environment variable
-      { expiresIn: '1h' }
+      secretKey,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '1h' } as SignOptions
     );
     return token;
   } catch (error: any) {
@@ -34,10 +39,10 @@ async function signIn(credentials: SignInInput) {
 
 async function verifyUser(token: string) {
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "jwt_secret" // Use environment variable
-    ) as TokenPayload;
+    // Get secure secret key
+    const secretKey = await getSecretKey();
+    
+    const decoded = jwt.verify(token, secretKey) as TokenPayload;
 
     const user = await User.findById(decoded.id);
 
@@ -83,10 +88,10 @@ async function refreshToken(refreshToken: string) {
   try {
     if (!refreshToken) throw new BadRequestError("Refresh token is required");
 
-    const decoded = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET || "jwt_refresh_secret" // Use environment variable
-    ) as TokenPayload;
+    // Get secure refresh secret key
+    const refreshSecret = await getRefreshSecretKey();
+    
+    const decoded = jwt.verify(refreshToken, refreshSecret) as TokenPayload;
 
     const user = await User.findById(decoded.id);
 
@@ -101,6 +106,7 @@ async function refreshToken(refreshToken: string) {
     throw error;
   }
 }
+
 export async function findUserById(id: string) {
   const user = await User.findById(id);
   if (!user) throw new BadRequestError("User not found");

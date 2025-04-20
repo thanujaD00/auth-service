@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import User, { ROLES } from "../models/user.model";
 import { BadRequestError, UnAuthorized } from "../errors";
 import { TokenPayload } from "../types/auth.types";
+import { getSecretKey } from "../utils/secret-manager";
 
 export function validateUserRoleAndToken(requiredRoles: ROLES[] = []) {
   return async function (req: Request, res: Response, next: NextFunction) {
@@ -17,11 +18,11 @@ export function validateUserRoleAndToken(requiredRoles: ROLES[] = []) {
     const token = authHeader.split(" ")[1];
 
     try {
+      // Get secure secret key
+      const secretKey = await getSecretKey();
+      
       // Extract the user data from the token
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET_KEY || "fallback-secret-key" // Use environment variable
-      ) as TokenPayload;
+      const decoded = jwt.verify(token, secretKey) as TokenPayload;
 
       // Find the user in the database
       const user = await User.findById(decoded.id).select("-password");
