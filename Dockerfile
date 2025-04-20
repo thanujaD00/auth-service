@@ -32,3 +32,5 @@ EXPOSE 8081
 
 # Run application
 CMD ["node", "dist/app.js"]
+
+#Finalize & Deploy
