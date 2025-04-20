@@ -12,13 +12,13 @@ env:
   REGION: us-central1
 
 jobs:
-  snyk-security:
+  build-and-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Detect the language/project type
+      # Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -46,7 +46,11 @@ jobs:
           command: code test
           args: --severity-threshold=high
       
-      # Scan Docker image if available
+      # Build Docker image before scanning it
+      - name: Build Docker image
+        run: docker build -t ${{ env.SERVICE_NAME }}:latest .
+      
+      # Now scan the Docker image
       - name: Snyk - Check for vulnerabilities in Docker image
         uses: snyk/actions/docker@master
         env:
@@ -54,11 +58,9 @@ jobs:
         with:
           image: ${{ env.SERVICE_NAME }}:latest
           args: --file=Dockerfile --severity-threshold=high
-        # This step should only run after building the Docker image
-        # Add 'continue-on-error: true' if you want the pipeline to proceed even if vulnerabilities are found
 
-  build-and-deploy:
-    needs: snyk-security
+  deploy:
+    needs: build-and-scan
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
