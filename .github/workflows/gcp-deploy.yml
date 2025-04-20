@@ -3,35 +3,64 @@ name: Build, Scan and Deploy to Cloud Run
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 env:
-  PROJECT_ID: auth-service-457220 # Replace with your GCP Project ID
-  SERVICE_NAME: auth-service # The name you want to give your Cloud Run service
-  REGION: us-central1 # The region where you want to deploy
+  PROJECT_ID: auth-service-457220
+  SERVICE_NAME: auth-service
+  REGION: us-central1
 
 jobs:
-  sonarcloud-scan:
+  snyk-security:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Important for SonarCloud to analyze all history
 
-      - name: Run SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
+      # Detect the language/project type
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          args: >
-            -Dsonar.projectKey=3ba2c6e361deaa7787e28ad12f79a34139407c56
-            -Dsonar.organization=thanujad00
-            -Dsonar.branch.name=${{ github.ref_name }}
+          node-version: '18'
+          cache: 'npm'
+      
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+      
+      # Run Snyk to check for vulnerabilities in dependencies
+      - name: Snyk - Check for vulnerabilities in dependencies
+        uses: snyk/actions/node@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+      
+      # Run Snyk to check for code security issues (SAST)
+      - name: Snyk - Check for security issues in code
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --severity-threshold=high
+      
+      # Scan Docker image if available
+      - name: Snyk - Check for vulnerabilities in Docker image
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: ${{ env.SERVICE_NAME }}:latest
+          args: --file=Dockerfile --severity-threshold=high
+        # This step should only run after building the Docker image
+        # Add 'continue-on-error: true' if you want the pipeline to proceed even if vulnerabilities are found
 
   build-and-deploy:
-    needs: sonarcloud-scan # Ensures scan completes successfully before deployment
+    needs: snyk-security
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

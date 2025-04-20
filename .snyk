@@ -1,0 +1,20 @@
+# Snyk (.snyk) policy file
+version: v1.25.0
+
+# Ignore specific vulnerabilities
+ignore:
+  'npm:braces:20180219':
+    - '* > babel-preset-jest > babel-plugin-jest-hoist > braces':
+        reason: 'No remediation available, low risk for our usage'
+        expires: 2025-06-01T00:00:00.000Z
+  
+# Patch vulnerabilities if possible
+patch: {}
+
+# Set exclude patterns for files/folders to ignore during scanning
+exclude:
+  global:
+    - node_modules
+    - tests
+    - dist
+    - build
