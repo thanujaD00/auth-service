@@ -30,3 +30,8 @@
 2025-05-16T03:54:52.061Z :- INFO   : MongoDB connected successfully 😍
 2025-05-16T03:54:52.072Z :- INFO   : Auth Service is running on port 8081🚀
 2025-05-16T04:51:25.645Z :- INFO   : MongoDB disconnected 😢
+2025-05-17T05:04:43.587Z :- INFO   : MongoDB connected successfully 😍
+2025-05-17T05:04:43.602Z :- INFO   : Auth Service is running on port 8081🚀
+2025-05-17T05:09:49.567Z :- ERROR  : JWT Generation Error: JWT signing error
+2025-05-17T05:10:15.276Z :- ERROR  : JWT Generation Error: JWT signing error
+2025-05-17T05:12:26.693Z :- ERROR  : JWT Generation Error: JWT signing error

@@ -2,3 +2,6 @@
 2025-04-16T15:02:58.014Z :- ERROR  : MongoDB connection error 😢: connect ECONNREFUSED ::1:27017
 2025-04-16T15:04:07.771Z :- ERROR  : SignUp Error: User Already Exists
 2025-04-16T15:05:02.448Z :- ERROR  : SignUp Error: User Already Exists
+2025-05-17T05:09:49.567Z :- ERROR  : JWT Generation Error: JWT signing error
+2025-05-17T05:10:15.276Z :- ERROR  : JWT Generation Error: JWT signing error
+2025-05-17T05:12:26.693Z :- ERROR  : JWT Generation Error: JWT signing error
