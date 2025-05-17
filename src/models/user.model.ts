@@ -173,3 +173,5 @@ UserSchema.statics.login = async function (
 const User = mongoose.model<IUser, IUserModel>("User", UserSchema);
 
 export default User;
+//update
+
